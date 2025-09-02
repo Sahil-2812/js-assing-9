@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DOM Concepts in Action</title>
+</head>
+
+<body>
+  <script>
+    //function to create and append
+    function createElement(tag, attributes = {}, parent = null, text = '') {
+      const el = document.createElement(tag);
+      Object.entries(attributes).forEach(([key, value]) => el.setAttribute(key, value));
+      if (text) el.textContent = text;
+      if (parent) parent.appendChild(el);
+      return el;
+    }
+
+    // CSS Styling
+    const style = document.createElement("style");
+    style.textContent = `
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: #f9f9f9;
+        color: #333;
+        min-height: 100vh; 
+      }
+        
+        html, body {
+  width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  
+  scroll-behavior: smooth;
+  
+  }
+      header, footer {
+        background: #222;
+        color: white;
+        padding: 15px;
+        text-align: center;
+      }
+   main {
+  padding: 20px;
+  max-width: 1200px;  /* wider on laptops */
+  width: 86%;         /* fill most of the screen */
+  margin: auto;
+}
+
+      h2 {
+        margin-top: 30px;
+        border-bottom: 2px solid #ccc;
+        padding-bottom: 5px;
+        color: #444;
+      }
+      #parent {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin: 15px 0;
+      }
+      .child {
+        background: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 6px;
+      }
+      #container p {
+        background: #e0f7fa;
+        padding: 10px;
+        border-radius: 5px;
+        margin: 10px 0;
+        transition: opacity 0.5s;
+      }
+      #outerDiv {
+        border: 2px solid #999;
+        margin-top: 10px;
+        cursor: pointer;
+      }
+      #innerDiv {
+        margin-top: 10px;
+        cursor: pointer;
+      }
+    
+      #box {
+        margin: 10px 0;
+      }
+    
+      form {
+        margin-top: 15px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      input[type="text"] {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+      button[type="submit"] {
+        padding: 8px 16px;
+        background: #28a745;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      button[type="submit"]:hover {
+        background: #1e7e34;
+      }
+      #searchInput {
+        width: 90%;
+        padding: 8px;
+        margin-top: 10px;
+        margin-left: 5px;
+        border-radius: 5px;
+        border: 1px solid #aaa;
+      }
+      footer {
+        margin-top: 30px;
+      }
+         @media (max-width: 600px) {
+        main {
+          padding: 10px;
+        }
+        h2 {
+          font-size: 1.1rem;
+        }
+        form {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        button[type="submit"] {
+          width: 100%;
+        }
+        .child {
+          flex: 1 1 100%;
+        }
+        #box {
+          width: 80px;
+          height: 80px;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // HEADER
+    const header = createElement('header', {}, document.body);
+    const parentDiv = createElement('div', { id: 'parent' }, header);
+    createElement('div', { class: 'child' }, parentDiv, 'Child 1');
+    createElement('div', { class: 'child' }, parentDiv, 'Child 2');
+
+    // MAIN
+    const main = createElement('main', {}, document.body);
+
+    // DOM Manipulation section
+    createElement('h2', {}, main, 'Dynamic DOM Manipulation');
+    const container = createElement('div', { id: 'container' }, main);
+
+    // Event
+    createElement('h2', {}, main, 'Event Propagation Example');
+    const outerDiv = createElement('div', { id: 'outerDiv', style: 'padding:20px; background:#f0f0f0;' }, main, 'Outer Div');
+    createElement('div', { id: 'innerDiv', style: 'padding:20px; background:#d0d0d0;' }, outerDiv, 'Inner Div');
+
+ 
+
+    // Form Handling
+    createElement('h2', {}, main, 'Form Handling Example');
+    const form = createElement('form', { id: 'myForm' }, main);
+    createElement('label', { for: 'name' }, form, 'Name:');
+    const nameField = createElement('input', { type: 'text', id: 'name' }, form);
+    createElement('button', { type: 'submit' }, form, 'Submit');
+
+    // Debouncing
+    createElement('h2', {}, main, 'Debouncing Example');
+    createElement('input', { type: 'text', id: 'searchInput', placeholder: 'Search...' }, main);
+
+    // FOOTER
+    const footer = createElement('footer', {}, document.body);
+    createElement('p', {}, footer, 'Footer Content');
+
+    // DOM Traversing
+    console.log(parentDiv.firstElementChild.textContent); // Child 1
+    console.log(parentDiv.lastElementChild.textContent);  // Child 2
+
+    // Dynamic DOM Manipulation
+    const newParagraph = document.createElement('p');
+    newParagraph.textContent = 'This is a dynamically created paragraph.';
+    container.appendChild(newParagraph);
+    setTimeout(() => {
+      newParagraph.style.opacity = "0";
+      setTimeout(() => container.removeChild(newParagraph), 500);
+    }, 3000);
+
+    // Event Propagation
+    outerDiv.addEventListener('click', () => alert('Outer Div clicked'));
+    document.getElementById('innerDiv').addEventListener('click', (e) => {
+      alert('Inner Div clicked');
+      e.stopPropagation();
+    });
+
+
+    // Form Handling
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      alert(`Form submitted with name: ${nameField.value}`);
+    });
+
+    // Debouncing
+    let debounceTimeout;
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      clearTimeout(debounceTimeout);
+      debounceTimeout = setTimeout(() => {
+        console.log(`Searching for: ${e.target.value}`);
+      }, 500);
+    });
+  </script>
+</body>
+
+</html>
